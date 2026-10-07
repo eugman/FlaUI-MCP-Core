@@ -1,0 +1,166 @@
+# Formatting is done by CSharpier (dotnet csharpier format .), which reads max_line_length here.
+# The rules below cover what a formatter can't: braces, blank lines between blocks, and size limits.
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{json,yml,yaml,csproj,props,targets,slnx,xml,xaml}]
+indent_size = 2
+
+[*.cs]
+indent_size = 4
+max_line_length = 120
+
+# One statement per line, braces on every block.
+csharp_prefer_braces = true:error
+dotnet_diagnostic.IDE0011.severity = error
+csharp_style_allow_embedded_statements_on_same_line_experimental = false
+dotnet_diagnostic.IDE2001.severity = error
+
+# Leave a blank line after a block, and no runs of blank lines.
+dotnet_style_allow_statement_immediately_after_block_experimental = false
+dotnet_diagnostic.IDE2003.severity = error
+dotnet_style_allow_multiple_blank_lines_experimental = false
+dotnet_diagnostic.IDE2000.severity = error
+
+csharp_style_namespace_declarations = file_scoped:error
+dotnet_diagnostic.IDE0161.severity = error
+csharp_style_expression_bodied_methods = when_on_single_line:silent
+
+# Too noisy for this code base.
+dotnet_diagnostic.CA1861.severity = none  # constant array arguments
+
+# Size and complexity limits (thresholds in SonarLint.xml).
+dotnet_diagnostic.S104.severity = error   # file too long
+dotnet_diagnostic.S1200.severity = error  # class coupled to too many types
+dotnet_diagnostic.S138.severity = error   # method too long
+dotnet_diagnostic.S3776.severity = error  # cognitive complexity
+dotnet_diagnostic.S134.severity = error   # nesting too deep
+dotnet_diagnostic.S1067.severity = error  # expression too complex
+dotnet_diagnostic.S3358.severity = error  # nested ternary
+dotnet_diagnostic.S107.severity = error   # too many parameters
+dotnet_diagnostic.S109.severity = suggestion  # magic number: shown in the IDE, too noisy for the build
+
+[tests/**.cs]
+dotnet_diagnostic.CA1707.severity = none  # test names use underscores
+dotnet_diagnostic.S109.severity = none
+dotnet_diagnostic.S138.severity = none
+
+# Known debt: files that already break a size or complexity limit. Fixing a file means deleting
+# its section here; never add a new one. New files must meet the limits.
+
+[src/FlaUI.Mcp/Core/BoundedSearch.cs]
+dotnet_diagnostic.S134.severity = suggestion
+dotnet_diagnostic.S138.severity = suggestion
+dotnet_diagnostic.S3776.severity = suggestion
+
+[src/FlaUI.Mcp/Core/CaptureFrame.cs]
+dotnet_diagnostic.S1067.severity = suggestion
+
+[src/FlaUI.Mcp/Core/ControlText.cs]
+dotnet_diagnostic.S3358.severity = suggestion
+
+[src/FlaUI.Mcp/Core/DpiUtility.cs]
+dotnet_diagnostic.S3358.severity = suggestion
+
+[src/FlaUI.Mcp/Core/ElementQuery.cs]
+dotnet_diagnostic.S104.severity = suggestion
+dotnet_diagnostic.S1067.severity = suggestion
+dotnet_diagnostic.S107.severity = suggestion
+dotnet_diagnostic.S1200.severity = suggestion
+dotnet_diagnostic.S138.severity = suggestion
+dotnet_diagnostic.S3776.severity = suggestion
+
+[src/FlaUI.Mcp/Core/ModalAwareInvoker.cs]
+dotnet_diagnostic.S3776.severity = suggestion
+
+[src/FlaUI.Mcp/Core/OperationContext.cs]
+dotnet_diagnostic.S3358.severity = suggestion
+dotnet_diagnostic.S3776.severity = suggestion
+
+[src/FlaUI.Mcp/Core/PendingInvokeTracker.cs]
+dotnet_diagnostic.S1067.severity = suggestion
+
+[src/FlaUI.Mcp/Core/SessionManager.cs]
+dotnet_diagnostic.S104.severity = suggestion
+dotnet_diagnostic.S3358.severity = suggestion
+dotnet_diagnostic.S3776.severity = suggestion
+
+[src/FlaUI.Mcp/Core/SnapshotBuilder.cs]
+dotnet_diagnostic.S1067.severity = suggestion
+dotnet_diagnostic.S134.severity = suggestion
+dotnet_diagnostic.S138.severity = suggestion
+dotnet_diagnostic.S3776.severity = suggestion
+
+[src/FlaUI.Mcp/Core/TextClipboard.cs]
+dotnet_diagnostic.S138.severity = suggestion
+dotnet_diagnostic.S3776.severity = suggestion
+
+[src/FlaUI.Mcp/Core/Win32Desktop.cs]
+dotnet_diagnostic.S104.severity = suggestion
+dotnet_diagnostic.S1067.severity = suggestion
+
+[src/FlaUI.Mcp/Mcp/McpServer.cs]
+dotnet_diagnostic.S134.severity = suggestion
+dotnet_diagnostic.S138.severity = suggestion
+dotnet_diagnostic.S3776.severity = suggestion
+
+[src/FlaUI.Mcp/Mcp/ToolRegistry.cs]
+dotnet_diagnostic.S138.severity = suggestion
+
+[src/FlaUI.Mcp/Tools/BatchTool.cs]
+dotnet_diagnostic.S138.severity = suggestion
+dotnet_diagnostic.S3358.severity = suggestion
+dotnet_diagnostic.S3776.severity = suggestion
+
+[src/FlaUI.Mcp/Tools/ClickTool.cs]
+dotnet_diagnostic.S134.severity = suggestion
+dotnet_diagnostic.S138.severity = suggestion
+dotnet_diagnostic.S3776.severity = suggestion
+
+[src/FlaUI.Mcp/Tools/FindTool.cs]
+dotnet_diagnostic.S138.severity = suggestion
+
+[src/FlaUI.Mcp/Tools/PasteTool.cs]
+dotnet_diagnostic.S138.severity = suggestion
+dotnet_diagnostic.S3358.severity = suggestion
+dotnet_diagnostic.S3776.severity = suggestion
+
+[src/FlaUI.Mcp/Tools/ScreenshotTool.cs]
+dotnet_diagnostic.S104.severity = suggestion
+dotnet_diagnostic.S1200.severity = suggestion
+dotnet_diagnostic.S134.severity = suggestion
+dotnet_diagnostic.S138.severity = suggestion
+dotnet_diagnostic.S3776.severity = suggestion
+
+[src/FlaUI.Mcp/Tools/SendKeysTool.cs]
+dotnet_diagnostic.S138.severity = suggestion
+dotnet_diagnostic.S3358.severity = suggestion
+dotnet_diagnostic.S3776.severity = suggestion
+
+[src/FlaUI.Mcp/Tools/TypeTools.cs]
+dotnet_diagnostic.S134.severity = suggestion
+dotnet_diagnostic.S138.severity = suggestion
+dotnet_diagnostic.S3358.severity = suggestion
+dotnet_diagnostic.S3776.severity = suggestion
+
+[src/FlaUI.Mcp/Tools/WaitTool.cs]
+dotnet_diagnostic.S1067.severity = suggestion
+dotnet_diagnostic.S138.severity = suggestion
+dotnet_diagnostic.S3776.severity = suggestion
+
+[src/FlaUI.Mcp/Tools/WindowPlacementTool.cs]
+dotnet_diagnostic.S138.severity = suggestion
+dotnet_diagnostic.S3776.severity = suggestion
+
+[tests/FlaUI.Mcp.IntegrationTests/TestAppFixture.cs]
+dotnet_diagnostic.S3776.severity = suggestion
+
+[tests/TestApps/WinFormsTestApp/MainForm.cs]
+dotnet_diagnostic.S104.severity = suggestion
+dotnet_diagnostic.S3776.severity = suggestion
+

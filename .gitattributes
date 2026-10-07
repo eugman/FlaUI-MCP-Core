@@ -1,0 +1,5 @@
+* text=auto
+# Git runs hooks with sh, which breaks on CRLF.
+.githooks/* text eol=lf
+*.png binary
+*.ico binary

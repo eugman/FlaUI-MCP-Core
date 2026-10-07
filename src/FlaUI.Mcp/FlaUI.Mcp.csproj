@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>FlaUI.Mcp</AssemblyName>
+    <RootNamespace>FlaUI.Mcp</RootNamespace>
+    <Version>0.2.0</Version>
+    <Authors>Scott Hanselman, Eugene Meidinger</Authors>
+    <Description>MCP server for Windows desktop automation using FlaUI and UI Automation</Description>
+    <RepositoryUrl>https://github.com/eugman/FlaUI-MCP-Core</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FlaUI.Core" Version="5.0.0" />
+    <PackageReference Include="FlaUI.UIA3" Version="5.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.2" />
+    <PackageReference Include="System.Text.Json" Version="10.0.2" />
+  </ItemGroup>
+</Project>

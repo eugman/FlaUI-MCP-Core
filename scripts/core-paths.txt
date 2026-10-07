@@ -1,0 +1,20 @@
+# Paths owned by FlaUI-MCP-Core. Product repos change these only by merging core/main.
+src/FlaUI.Mcp/
+tests/FlaUI.Mcp.Tests/
+tests/FlaUI.Mcp.IntegrationTests/
+tests/TestApps/
+scripts/check.ps1
+scripts/check-core-untouched.ps1
+scripts/core-paths.txt
+scripts/setup.ps1
+scripts/format.ps1
+scripts/agent-format.ps1
+scripts/pre-commit.ps1
+global.json
+docs/code-quality.md
+.githooks/
+.config/dotnet-tools.json
+.editorconfig
+.gitattributes
+Directory.Build.props
+SonarLint.xml

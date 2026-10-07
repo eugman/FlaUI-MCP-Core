@@ -1,0 +1,29 @@
+# Build output
+bin/
+obj/
+publish/
+artifacts/
+TestResults/
+*.trx
+coverage/
+
+# IDE and OS
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Your own scripts, configs and notes (product repos build on this folder too)
+/local/
+*.csx
+.playwright-mcp/
+__pycache__/
+
+# Agent and MCP client settings for this machine
+/CLAUDE.local.md
+/.mcp.json
+/.claude/settings.local.json
