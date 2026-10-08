@@ -42,9 +42,13 @@ public sealed class GuardedInput : IDisposable
         {
             target.EnsureAlive();
             MutationGuard.CheckPermission();
-            if (!Win32Desktop.BelongsTo(Win32Desktop.GetForegroundWindow(), target.Hwnd))
+            if (!IsTargetWindow(Win32Desktop.GetForegroundWindow(), target))
             {
-                Win32Desktop.FocusWindow(target.Hwnd);
+                // While a modal dialog disables the target, activate the dialog: a disabled window
+                // cannot take input, so focusing it would only fail verification.
+                Win32Desktop.FocusWindow(
+                    Win32Desktop.IsWindowEnabled(target.Hwnd) ? target.Hwnd : Win32Desktop.LastActivePopup(target.Hwnd)
+                );
             }
 
             if (element != null)
@@ -122,7 +126,7 @@ public sealed class GuardedInput : IDisposable
     private static void RequireActivated(InputTarget target)
     {
         var foreground = Win32Desktop.GetForegroundWindow();
-        if (Win32Desktop.BelongsTo(foreground, target.Hwnd))
+        if (IsTargetWindow(foreground, target))
         {
             return;
         }
@@ -174,7 +178,8 @@ public sealed class GuardedInput : IDisposable
                 foreground,
                 Win32Desktop.GetProcessId,
                 Win32Desktop.BelongsTo,
-                Win32Desktop.IsWindowEnabled
+                Win32Desktop.IsWindowEnabled,
+                Win32Desktop.HasOwner
             )
         )
         {
@@ -183,22 +188,30 @@ public sealed class GuardedInput : IDisposable
     }
 
     // The target's own hosted children (e.g. a cross-process WebView2 renderer) and owned popups
-    // count as the target; a separate top-level window does not, even in the same process.
+    // count as the target; a separate top-level window does not, even in the same process. A modal
+    // dialog counts while it disables its owner: WinForms ShowDialog creates an owned overlapped
+    // window, which GA_ROOTOWNER does not follow, so the owner chain is checked for that case only.
+    // A modeless owned window is still a separate window.
     internal static bool ForegroundAcceptable(
         InputTarget target,
         nint foreground,
         Func<nint, int> processOf,
         Func<nint, nint, bool> belongsTo,
-        Func<nint, bool> enabled
+        Func<nint, bool> enabled,
+        Func<nint, nint, bool> ownedBy
     )
     {
-        if (processOf(target.Hwnd) != target.ProcessId || foreground == 0)
+        if (processOf(target.Hwnd) != target.ProcessId || foreground == 0 || !enabled(foreground))
         {
             return false;
         }
 
-        return belongsTo(foreground, target.Hwnd) && enabled(foreground);
+        return belongsTo(foreground, target.Hwnd) || !enabled(target.Hwnd) && ownedBy(foreground, target.Hwnd);
     }
+
+    private static bool IsTargetWindow(nint foreground, InputTarget target) =>
+        Win32Desktop.BelongsTo(foreground, target.Hwnd)
+        || !Win32Desktop.IsWindowEnabled(target.Hwnd) && Win32Desktop.HasOwner(foreground, target.Hwnd);
 
     public void Send(Action input)
     {

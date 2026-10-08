@@ -38,7 +38,11 @@ public class ElementQueryTests(TestAppFixture fixture)
     {
         var query = Query;
         query
-            .Resolve(fixture.WinFormsHandle, new(AutomationId: pattern == "Invoke" ? "ButtonsTab" : "TreesTab"))
+            .Resolve(
+                fixture.WinFormsHandle,
+                // A selected TabPage shares its tab's AutomationId, so name the TabItem.
+                new(AutomationId: pattern == "Invoke" ? "ButtonsTab" : "TreesTab", ControlType: "TabItem")
+            )
             .Patterns.SelectionItem.Pattern.Select();
         var scope =
             pattern == "Invoke"
@@ -95,7 +99,7 @@ public class ElementQueryTests(TestAppFixture fixture)
     public void ScopedDiscoveryFindsExpandedWinFormsBranch()
     {
         var query = Query;
-        var tab = query.Resolve(fixture.WinFormsHandle, new(AutomationId: "TreesTab"));
+        var tab = query.Resolve(fixture.WinFormsHandle, new(AutomationId: "TreesTab", ControlType: "TabItem"));
         tab.Patterns.SelectionItem.Pattern.Select();
         var tree = query.Resolve(fixture.WinFormsHandle, new(AutomationId: "TestTreeView"));
         var fruits = query.Resolve(
@@ -159,7 +163,7 @@ public class ElementQueryTests(TestAppFixture fixture)
     {
         var root = Query.Resolve(fixture.WinFormsHandle, new(AutomationId: "MainForm", ControlType: "Window"));
         Assert.Equal("MainForm", root.Properties.AutomationId.Value);
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<ElementNotFoundException>(() =>
             Query.Resolve(fixture.WinFormsHandle, new(AutomationId: "MainForm", ControlType: "Button"))
         );
         var tabs = Query.Resolve(fixture.WinFormsHandle, new(AutomationId: "MainTabs"), new(AutomationId: "MainForm"));

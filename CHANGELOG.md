@@ -16,6 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `windows_wait` accepts at most 25 seconds, so a maximum wait ends as a wait result rather than a tool timeout.
 - Formatting, size and complexity limits are enforced by CSharpier, analyzers, git hooks and CI (see docs/code-quality.md).
 
+### Fixed
+- Guarded input accepts a modal dialog that disables the target even when the dialog is an owned overlapped window (WinForms `ShowDialog`), which `GA_ROOTOWNER` does not follow. A modeless owned window is still treated as a separate window. When the target is disabled by a modal, activation goes to the dialog rather than the disabled window.
+- `windows_wait` rejects `settleMs` equal to `timeoutMs`, which could never succeed.
+- The tool timeout timer is cancelled when a tool returns.
+- `scripts/check.ps1` builds with two nodes, and `scripts/setup.ps1` only configures the blame ignore list when the repo has one.
+- Integration tests: an exact-ID miss expects `ElementNotFoundException`, and tab selection names the `TabItem`, since a selected WinForms `TabPage` shares its tab's AutomationId.
+
+### Added
+- `Win32Desktop.IsMinimized` and `Win32Desktop.LastActivePopup`.
+
 ### Added
 - `windows_screenshot` refuses a screen-pixel capture when another application's window covers part of the target, naming each obstruction by title, HWND and PID. Such a capture previously returned the covering window's pixels and reported success with `screenFallback: false` — observed three times against a real app, once by accident during ordinary work. Native capture (`strictNative`) renders the window's own surface and is exempt, as is the blocked-provider fallback, where a modal is in front of the target by construction and refusing would leave no way to capture at all. `allowOccludedPixels: true` overrides deliberately. Windows belonging to the target's own process are allowed, so an app's own dialogs and menus are never treated as intruders.
 - `windows_screenshot` reports `monitorDpi` beside `windowDpi`, with a `dpiMismatch` flag. A window that has not re-negotiated after a display-scaling change renders a native capture at its own scale into a bitmap sized for the monitor's: correctly sized, wrongly scaled, and invisible to the `frame` size assertion because the bitmap is exactly the expected size. A mismatch warns and never refuses — those pixels are what is actually on the glass, and the state is permanent for DPI-unaware apps. Warnings no longer depend on `includeMetadata`, and `occluded` is tri-state so a capture that could not be checked is never reported as clean.

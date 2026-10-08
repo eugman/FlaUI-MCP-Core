@@ -39,17 +39,33 @@ public sealed class ForegroundAuthorizationTests
                 _ => 0,
             };
         bool Belongs(nint hwnd, nint owner) => hwnd == owner || (hwnd is 400 or 500 && owner == 100);
+        static bool NotOwned(nint hwnd, nint owner) => false;
 
-        Assert.True(GuardedInput.ForegroundAcceptable(target, 100, Process, Belongs, _ => true));
-        Assert.True(GuardedInput.ForegroundAcceptable(target, 400, Process, Belongs, _ => true));
-        Assert.True(GuardedInput.ForegroundAcceptable(target, 500, Process, Belongs, _ => true));
-        Assert.False(GuardedInput.ForegroundAcceptable(target, 600, Process, Belongs, _ => true));
-        Assert.False(GuardedInput.ForegroundAcceptable(target, 900, Process, Belongs, _ => true));
-        Assert.False(GuardedInput.ForegroundAcceptable(target, 400, Process, Belongs, _ => false));
-        Assert.False(GuardedInput.ForegroundAcceptable(target, 0, Process, Belongs, _ => true));
+        Assert.True(GuardedInput.ForegroundAcceptable(target, 100, Process, Belongs, _ => true, NotOwned));
+        Assert.True(GuardedInput.ForegroundAcceptable(target, 400, Process, Belongs, _ => true, NotOwned));
+        Assert.True(GuardedInput.ForegroundAcceptable(target, 500, Process, Belongs, _ => true, NotOwned));
+        Assert.False(GuardedInput.ForegroundAcceptable(target, 600, Process, Belongs, _ => true, NotOwned));
+        Assert.False(GuardedInput.ForegroundAcceptable(target, 900, Process, Belongs, _ => true, NotOwned));
+        Assert.False(GuardedInput.ForegroundAcceptable(target, 400, Process, Belongs, _ => false, NotOwned));
+        Assert.False(GuardedInput.ForegroundAcceptable(target, 0, Process, Belongs, _ => true, NotOwned));
         Assert.False(
-            GuardedInput.ForegroundAcceptable(target with { ProcessId = 8 }, 100, Process, Belongs, _ => true)
+            GuardedInput.ForegroundAcceptable(target with { ProcessId = 8 }, 100, Process, Belongs, _ => true, NotOwned)
         );
+    }
+
+    [Fact]
+    public void ModalOwnedWindowCountsOnlyWhileItDisablesTheTarget()
+    {
+        // 700: a WinForms dialog owned by 100 but not a WS_POPUP, so GA_ROOTOWNER misses it.
+        var target = new InputTarget(100, 7, 0);
+        static int Process(nint hwnd) => 7;
+        static bool Belongs(nint hwnd, nint owner) => hwnd == owner;
+        static bool Owned(nint hwnd, nint owner) => hwnd == 700 && owner == 100;
+
+        Assert.True(GuardedInput.ForegroundAcceptable(target, 700, Process, Belongs, h => h != 100, Owned));
+        // Modeless: the owner stays enabled, so the dialog is a separate window.
+        Assert.False(GuardedInput.ForegroundAcceptable(target, 700, Process, Belongs, _ => true, Owned));
+        Assert.False(GuardedInput.ForegroundAcceptable(target, 800, Process, Belongs, h => h != 100, Owned));
     }
 
     [Fact]

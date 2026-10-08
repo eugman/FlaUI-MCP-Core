@@ -91,9 +91,12 @@ public class ToolRegistry
                     OperationContext.Current.Value = null;
                 }
             });
-            var timeoutTask = Task.Delay(_toolTimeout);
-
-            if (await Task.WhenAny(toolTask, timeoutTask) == timeoutTask)
+            using var timer = new CancellationTokenSource();
+            var timeoutTask = Task.Delay(_toolTimeout, timer.Token);
+            var finished = await Task.WhenAny(toolTask, timeoutTask);
+            // Stop the timer once the tool returns, so a fast call doesn't leave it running for the full timeout.
+            await timer.CancelAsync();
+            if (finished == timeoutTask)
             {
                 operation.Stop.Cancel();
                 // A stranded call can still hold this app's UIA provider. Fail later ref tools fast until it returns.

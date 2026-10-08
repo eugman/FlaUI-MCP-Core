@@ -4,7 +4,10 @@ $ErrorActionPreference = 'Stop'
 Set-Location (git rev-parse --show-toplevel)
 dotnet tool restore
 git config core.hooksPath .githooks
-git config blame.ignoreRevsFile .git-blame-ignore-revs
+# Each repo lists its own formatting commits; git blame fails if the configured file is missing.
+if (Test-Path .git-blame-ignore-revs) {
+    git config blame.ignoreRevsFile .git-blame-ignore-revs
+}
 
 $isProduct = [bool](Get-ChildItem src -Directory | Where-Object Name -like 'FlaUI.Mcp.?*')
 if ($isProduct -and (git remote) -notcontains 'core') {

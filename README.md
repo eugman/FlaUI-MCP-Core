@@ -57,7 +57,7 @@ Then add the server to your MCP client:
 | `windows_click` | Click or invoke an element. |
 | `windows_fill` | Replace a field's value. |
 | `windows_type` | Type text into an element or the focused control. |
-| `windows_paste` | Paste text through the clipboard, which autocomplete can't rewrite. |
+| `windows_paste` | Paste text through the clipboard, which autocomplete can't rewrite. The pasted text stays on the clipboard. |
 | `windows_send_keys` | Send keys or chords such as `Ctrl+A`. |
 | `windows_get_clipboard` | Read the clipboard, for editors that hide their text from UI Automation. |
 | `windows_screenshot` | Capture a window, element or screen region as PNG. |

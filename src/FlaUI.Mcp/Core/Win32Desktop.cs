@@ -296,6 +296,15 @@ public static partial class Win32Desktop
     [DllImport("user32.dll")]
     private static extern bool IsIconic(nint hWnd);
 
+    /// <summary>True while the window is minimized; UIA trees of minimized windows are often incomplete.</summary>
+    public static bool IsMinimized(nint hwnd) => IsIconic(hwnd);
+
+    [DllImport("user32.dll")]
+    private static extern nint GetLastActivePopup(nint hWnd);
+
+    /// <summary>The window Windows activates for <paramref name="owner"/>: its last active owned popup, or itself.</summary>
+    public static nint LastActivePopup(nint owner) => GetLastActivePopup(owner);
+
     [DllImport("user32.dll")]
     private static extern bool IsZoomed(nint hWnd);
 
@@ -392,8 +401,13 @@ public static partial class Win32Desktop
     /// </summary>
     public static bool BelongsTo(nint hwnd, nint target) => BelongsTo(hwnd, target, GetAncestor);
 
+    private const uint GaRoot = 2;
+    private const uint GaRootOwner = 3;
+
     internal static bool BelongsTo(nint hwnd, nint target, Func<nint, uint, nint> ancestor) =>
-        hwnd != 0 && target != 0 && (hwnd == target || ancestor(hwnd, 2) == target || ancestor(hwnd, 3) == target); // GA_ROOT, GA_ROOTOWNER
+        hwnd != 0
+        && target != 0
+        && (hwnd == target || ancestor(hwnd, GaRoot) == target || ancestor(hwnd, GaRootOwner) == target);
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern int GetClassName(nint hWnd, StringBuilder lpClassName, int nMaxCount);

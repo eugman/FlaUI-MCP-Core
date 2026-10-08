@@ -82,10 +82,10 @@ public sealed class WaitTool(ElementQuery query) : ToolBase
             var settle = Number("settleMs", 500);
             var maxNodes = Number("maxNodes", 3000);
             var includeOwned = GetBoolArgument(a, "includeOwned");
-            if (timeout is < 1 or > 25000 || settle < 0 || settle > timeout || state == "absent" && settle == 0)
+            if (timeout is < 1 or > 25000 || settle < 0 || settle >= timeout || state == "absent" && settle == 0)
             {
                 throw new ArgumentException(
-                    "timeoutMs must be 1..25000; settleMs must be 0..timeoutMs and positive for absence."
+                    "timeoutMs must be 1..25000; settleMs must be below timeoutMs and positive for absence."
                 );
             }
 

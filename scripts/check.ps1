@@ -65,7 +65,7 @@ Step 'Formatting (fix with: pwsh scripts/format.ps1)' { dotnet csharpier check .
 Step 'Shared core untouched' { & ./scripts/check-core-untouched.ps1 }
 Step 'Known debt does not grow' { CheckDebt }
 # Capped so a check doesn't saturate a shared desktop, and leaves no idle build nodes behind.
-Step 'Build with analyzers' { dotnet build FlaUI.Mcp.slnx -nologo -v q -m:4 -nodeReuse:false }
+Step 'Build with analyzers' { dotnet build FlaUI.Mcp.slnx -nologo -v q -m:2 -nodeReuse:false }
 
 $unitTests = Get-ChildItem tests -Filter *.csproj -Recurse |
     Where-Object { $_.Name -like '*Tests.csproj' -and $_.Name -notlike '*IntegrationTests*' }
